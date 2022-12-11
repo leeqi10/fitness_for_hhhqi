@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="hhhqi.com.dao.CourseMapper">
+    <sql id="baseQuery">
+        select course_id,
+               course_name,
+               course_coach,
+               course_time,
+               course_count,
+               course_already,
+               course_date
+        from course
+    </sql>
+
+
+    <!--2. 查询所有课程信息-->
+    <select id="getAllCourse" resultType="hhhqi.com.entity.Course" resultMap="courseEntity">
+        <include refid="baseQuery"/>
+    </select>
+
+    <!--3. 根据课程名字模糊查询信息-->
+    <select id="getCourseByPage" resultType="hhhqi.com.entity.Course" resultMap="courseEntity">
+        <include refid="baseQuery"/>
+        <bind name="courseNameLike" value="'%' + courseName + '%'" />
+        <bind name="courseCoachLike" value="'%' + courseCoach + '%'" />
+        where 1=1
+        <if test='courseName!=null and courseName!=""'>
+            and course_name like #{courseNameLike}
+        </if>
+        <if test='courseCoach!=null and courseCoach!=""'>
+            and course_coach like #{courseCoachLike}
+        </if>
+        order by course_id asc limit #{start},#{end}
+    </select>
+
+
+    <!--5. 新增课程信息-->
+    <insert id="insertCourse">
+        INSERT INTO course(course_name, course_coach, course_time, course_count, course_already, course_date)
+        VALUES (#{courseName}, #{courseCoach}, #{courseTime}, #{courseCount}, #{courseAlready}, now())
+    </insert>
+
+    <!--6. 删除课程信息-->
+    <delete id="deleteCourse">
+        delete
+        from course
+        where course_id = #{courseId}
+    </delete>
+
+    <!--7. 更新课程信息-->
+    <update id="updateCourse">
+        update course
+        <trim prefix='set ' suffixOverrides=','>
+            course_id = #{courseId},
+            <if test='courseName!=null and courseName!=""'> course_name=#{courseName},</if>
+            <if test='courseCoach!=null and courseCoach!=""'>course_coach=#{courseCoach},</if>
+            <if test='courseTime.toString()!=null and courseTime.toString()!=""'>course_time=#{courseTime},</if>
+            <if test='courseCount!=null and courseCount!=""'>course_count=#{courseCount},</if>
+            <if test='courseAlready!=null and courseAlready!=""'>course_already=#{courseAlready},</if>
+<!--            <if test='courseDate.toString()!=null and courseDate.toString()!=""'>course_date=#{courseDate},</if>-->
+        </trim> where course_id=#{courseId}
+    </update>
+    <resultMap id="courseEntity" type="hhhqi.com.entity.Course">
+        <id column="course_id" property="courseId" />
+        <!-- ，column为数据库字段名,,property对应实体类的属性名称 -->
+        <result column="course_name" property="courseName"/>
+        <result column="course_coach" property="courseCoach"/>
+        <result column="course_time" property="courseTime"/>
+        <result column="course_count" property="courseCount"/>
+        <result column="course_already" property="courseAlready"/>
+        <result column="course_date" property="courseDate"/>
+    </resultMap>
+
+
+
+</mapper>

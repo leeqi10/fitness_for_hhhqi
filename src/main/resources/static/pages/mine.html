@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统账号管理</title>
+  <style>
+    .layui-layer-title{
+      background-color: #F6F6F6;
+    }
+    .layui-layer-content .layui-form-label{
+      background-color:#F6F6F6;
+    }
+  </style>
+</head>
+<body>
+    <div class="layui-fluid" style="vertical-align: middle;">
+        <div class="layui-row">
+            <div class="layui-col-md12 layui-col-sm12">
+                <span style="color: #c2c2c2;">首页&nbsp;/ </span>
+                <span style="color: rgb(121,121,121);">&nbsp;个人信息&nbsp;/
+                </span>
+            </div>
+        </div>
+        <hr class="layui-border-blue">
+        <!-- 筛选条件 -->
+        <div class="layui-row" style="margin: 10px auto;">
+            <div class="layui-col-md6  layui-col-sm6">
+                <fieldset style="padding: 10px;margin: 10px;width: 97%;border: #e2e2e2 solid 1px;">
+                    <legend style="font-size: 20px;">&nbsp;筛选条件&nbsp;</legend>
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    </head>
+                    <body>
+                    <form class="layui-form layui-form-pane" action="/user/gengXinById" name="user_form_prompt" id="user_form_prompt" method="POST" enctype="application/json">
+
+                        <div class="layui-form-item" pane>
+                            <label class="layui-form-label">ID</label>
+                            <div class="layui-input-block">
+                                <input type="text" readonly name="id" required lay-verify="required" autocomplete="off" class="layui-input" id="id_prompt_input" value="id">
+                            </div>
+                        </div>
+                        <div class="layui-form-item" pane>
+                            <label class="layui-form-label">用户名称</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="username" required lay-verify="required" autocomplete="off" class="layui-input" id="username_prompt_input" value="username">
+                            </div>
+                        </div>
+                        <div class="layui-form-item" pane>
+                            <label class="layui-form-label">密码</label>
+                            <div class="layui-input-block">
+                                <input type="password" name="password" placeholder="不填写则不更新" lay-verify="required" autocomplete="off" class="layui-input" id="password_prompt_input" value="">
+                            </div>
+                        </div>
+                        <div class="layui-form-item" pane>
+                            <label class="layui-form-label">姓名</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="name" required lay-verify="required" autocomplete="off" class="layui-input" id="name_prompt_input" value="name">
+                            </div>
+                        </div>
+                        <div class="layui-form-item" pane>
+                            <label class="layui-form-label">联系方式</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="phone" required lay-verify="required|phone" autocomplete="off" class="layui-input" id="phone_prompt_input" value="phone">
+                            </div>
+                        </div>
+                        <div class="layui-form-item" pane>
+                            <label class="layui-form-label">年龄</label>
+                            <div class="layui-input-block">
+                                <input type="number" name="age" required lay-verify="required" autocomplete="off" class="layui-input" id="age_prompt_input" value="0">
+                            </div>
+                        </div>
+                        <div class="layui-form-item" pane>
+                            <label class="layui-form-label">角色</label>
+                            <div class="layui-input-block">
+                                <select name="role" lay-verify="required" id="role_select_prompt" lay-filter="addRoleSel">
+                                    <option value=""></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item" pane>
+                            <label class="layui-form-label">登录次数</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="loginCount" readonly autocomplete="off" class="layui-input" id="loginCount" value="loginCount">
+                            </div>
+                        </div>
+                        <div class="layui-row">
+                            <div class="layui-col-md4 layui-col-sm4">
+                                <div class="layui-col-md2 layui-col-sm2">
+                                    <button type="button" class="layui-btn layui-btn-radius layui-btn-normal" onclick="update()">更新</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <script>
+                            layui.use(['form'], function () {
+                                $ = layui.$,
+                                    form = layui.form;
+                                $(function () {
+                                    // console.log("xxx")
+                                    //给role的下拉列表添加元素
+                                    for (i of role) {
+                                        $("#role_select_prompt").append("<option value='" + i + "'>" + i + "</option>");
+                                    }
+                                    var user = JSON.parse(sessionStorage.getItem("user"));
+                                    $('#username_prompt_input').val(user.username);
+                                    $('#name_prompt_input').val(user.name);
+                                    $('#phone_prompt_input').val(user.phone);
+                                    $('#age_prompt_input').val(user.age);
+                                    $('#id_prompt_input').val(user.id);
+                                    $('#loginCount').val(user.loginCount);
+                                    //更改选中值
+                                    $("#role_select_prompt").val(user.role);
+                                    //重新渲染下拉框
+                                    form.render();
+                                });
+                            })
+                        function update() {
+                            $.ajax({
+                                type: "PUT",
+                                url: "/user/gengXinById",
+                                data: $('#user_form_prompt').serialize(),
+                                async: false,
+                                error: function (request) {
+                                    alert("Connection error");
+                                },
+                                success: function (data) {
+                                    //接收后台返回的结果
+                                    alert("更新成功")
+                                }
+                            });
+                        }
+                    </script>
+                    </body>
+                    </html>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+</body>  
+</html>

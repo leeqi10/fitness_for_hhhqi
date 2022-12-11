@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        
+  <meta charset="utf-8">
+    </head>
+<body>
+    
+<form class="layui-form layui-form-pane" id="coursePrompt_form" action="">
+
+    <input type="hidden" name="courseId" id="course_id_prompt_input">
+    <div class="layui-form-item" pane>
+        <label class="layui-form-label">课程名称</label>
+        <div class="layui-input-block">
+        <input type="text" name="courseName" required lay-verify="required" autocomplete="off" class="layui-input" id="course_name_prompt_input" value="name">
+        </div>
+    </div>
+    <div class="layui-form-item" pane>
+        <label class="layui-form-label">教练姓名</label>
+        <div class="layui-input-block">
+        <input type="text" name="courseCoach" required lay-verify="required" autocomplete="off" class="layui-input" id="course_coach_prompt_input" value="password">
+        </div>
+    </div>
+    <div class="layui-form-item" pane>
+        <label class="layui-form-label">上课时间</label>
+        <div class="layui-input-block">
+        <input type="text" name="courseTime" autocomplete="off" placeholder="yyyy-MM-dd HH:mm:ss" class="layui-input" id="course_time_prompt_input">
+        </div>
+    </div>
+    <div class="layui-form-item" pane>
+        <label class="layui-form-label">班容量</label>
+        <div class="layui-input-block">
+        <input type="number" name="courseCount" required lay-verify="required" autocomplete="off" class="layui-input" id="course_count_prompt_input">
+        </div>
+    </div>
+    <div class="layui-form-item" pane>
+        <label class="layui-form-label">已报人数</label>
+        <div class="layui-input-block">
+        <input type="number" name="courseAlready" autocomplete="off" class="layui-input" id="course_already_prompt_input">
+        </div>
+    </div>
+    </form>
+    <script>
+        layui.use('laydate', function(){
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '#course_time_prompt_input' //指定元素
+                ,type: "datetime"     //日期格式
+                //,value: '2020-08-18 8:00:00'
+            });
+        });
+    </script>
+</body>
+</html>

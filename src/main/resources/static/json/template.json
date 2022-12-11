@@ -1,0 +1,16 @@
+{
+    "code": 0
+    ,"msg": ""
+    ,"count": 8
+    ,"data": [{
+    "dataKind": "ID" 
+    },{"dataKind": "用户名" 
+    },{"dataKind": "密码"
+    },{"dataKind": "最后登陆时间" 
+    },{"dataKind": "登录次数" 
+    },{"dataKind": "电话" 
+    },{"dataKind": "年龄" 
+    },{"dataKind": "姓名" 
+    },{"dataKind": "角色" 
+  }]
+}

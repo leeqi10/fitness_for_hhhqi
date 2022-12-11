@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel='shortcut icon' href='../img/logo.ico'>
+  <title>健身房会员信息体统</title>
+  <link rel="stylesheet" href="../layui/css/layui.css">
+  <script src="../layui/layui.js"></script>
+  <script src="../json/role.js"></script>
+  <script src="../js/jquery-3.6.0.js"></script>
+  <script src="../layui_exts/excel.js"></script>
+  <script src="../layui/css/modules/laydate/default/laydate.css"></script>
+
+  <!-- 引用看板娘交互所需的样式表 -->
+  <link href='../Pio/static/pio.css' rel='stylesheet' type='text/css'/>
+  <style>
+    #paul{
+      left: 0;
+      bottom: 0;
+      z-index: 520; /* 如果模型被遮住可以把它改的更大 */
+      position: fixed;
+      pointer-events: none; /* 防止遮住鼠标点击页面其他内容 */
+    }
+  </style>
+</head>
+<body>
+<div class="pio-container right">
+  <div class="pio-action"></div>
+  <canvas id="pio" width="200" height="200"></canvas>
+</div>
+
+<!--开始-->
+<div class="layui-layout layui-layout-admin">
+  <div class="layui-header">
+    <div class="layui-logo layui-hide-xs layui-bg-black"><p style="color: rgb(39,240,194);font-size: 16px;">健身房会员信息体统</p></div>
+    <!-- 头部区域（可配合layui 已有的水平导航） -->
+    <ul class="layui-nav layui-layout-left">
+      <!-- 移动端显示 -->
+      <li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-header-event="menuLeft">
+        <i class="layui-icon layui-icon-spread-left"></i>
+      </li>
+      
+      <li class="layui-nav-item layui-hide-xs"><a href="">日志管理</a></li>
+      <li class="layui-nav-item layui-hide-xs"><a href="">用户</a></li>
+      <li class="layui-nav-item">
+        <a href="javascript:;">其它系统</a>
+        <dl class="layui-nav-child">
+          <dd><a href="">暂 无</a></dd>
+        </dl>
+      </li>
+    </ul>
+    <ul class="layui-nav layui-layout-right">
+      <li class="layui-nav-item layui-hide layui-show-md-inline-block">
+        <a href="javascript:;">
+          <img src="../img/bg_login.jpg" id="img_menu" class="layui-nav-img">
+
+        </a>
+        <dl class="layui-nav-child">
+          <dd><a href="">首 页</a></dd>
+        </dl>
+      </li>
+      <li class="layui-nav-item" lay-header-event="menuRight" lay-unselect>
+        <a href="javascript:;">
+            退了
+        </a>
+      </li>
+    </ul>
+  </div>
+  
+  <div class="layui-side layui-bg-black">
+    <div class="layui-side-scroll">
+      <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+      <ul class="layui-nav layui-nav-tree" lay-filter="test">
+        <li class="layui-nav-item"><a href="javascript:;" class="pageChange" page="mine.html">首页</a></li>
+        <li class="layui-nav-item layui-nav-itemed">
+          <a class="" href="javascript:;">系统账号管理</a>
+          <dl class="layui-nav-child">
+            <dd><a href="javascript:;" class="pageChange" page="user/userCtr.html">账号管理</a></dd>
+            <dd><a href="javascript:;" class="pageChange" page="user/addUser.html">新增账号</a></dd>
+          </dl>
+        </li>
+        <li class="layui-nav-item">
+          <a href="javascript:;">会员信息管理</a>
+          <dl class="layui-nav-child">
+            <dd><a href="javascript:;" class="pageChange" page="member/memberCtr.html">会员管理</a></dd>
+            <dd><a href="javascript:;" class="pageChange" page="member/addMember.html">新增会员</a></dd>
+          </dl>
+        </li>
+        <li class="layui-nav-item">
+            <a href="javascript:;">付费项目管理</a>
+            <dl class="layui-nav-child">
+              <dd><a href="javascript:;" class="pageChange" page="payProject/pay_projectCtr.html">所有项目管理</a></dd>
+              <dd><a href="javascript:;" class="pageChange" page="payProject/addPay_project.html">新增项目</a></dd>
+            </dl>
+        </li>
+        <li class="layui-nav-item">
+            <a href="javascript:;">所有教练管理</a>
+
+            <dl class="layui-nav-child">
+              <dd><a href="javascript:;" class="pageChange" page="coach/coachCtr.html">教练管理</a></dd>
+              <dd><a href="javascript:;" class="pageChange" page="coach/addCoach.html">新增教练信息</a></dd>
+            </dl>
+        </li>
+        <li class="layui-nav-item">
+            <a href="javascript:;">健身教程管理</a>
+            <dl class="layui-nav-child">
+              <dd><a href="javascript:;" class="pageChange" page="course/courseCtr.html">教程管理</a></dd>
+              <dd><a href="javascript:;" class="pageChange" page="course/addCourse.html">新增健身教程</a></dd>
+            </dl>
+        </li>
+      </ul>
+    </div>
+  </div>
+  
+  <div class="layui-body">
+    <!-- 内容主体区域 -->
+    <div style="padding: 15px;" id="content"><h1>欢迎进入健身房会员管理系统</h1><br><img src="../img/fault.png"></div>
+  </div>
+  
+  <div class="layui-footer">
+    <!-- 底部固定区域 -->
+    健身系统管理
+  </div>
+</div>
+
+<script>
+//JS 
+
+layui.use(['element', 'layer', 'util'], function(){
+  var element = layui.element
+  ,layer = layui.layer
+  ,util = layui.util
+  ,$ = layui.$;
+  
+  $(".pageChange").click(function(){
+    // console.log($(this).attr("page"))
+    $("#content").load($(this).attr("page"));
+  });
+  
+  
+  //头部事件
+  util.event('lay-header-event', {
+    //左侧菜单事件
+    menuLeft: function(othis){
+      layer.msg('展开左侧菜单的操作', {icon: 0});
+    }
+    ,menuRight: function(){
+      $.ajax({
+        type: "POST",
+        url:"/user/exit",
+      });
+      sessionStorage.clear();
+      window.location.href = ("login.html")
+    }
+  });
+
+});
+
+</script>
+
+<script>
+  var username = JSON.parse(sessionStorage.getItem("user"))['username'];
+  $("#img_menu").after("&nbsp;"+username.trim());
+</script>
+<!--//时间戳转日期格式-->
+<!--<script>-->
+<!--  function changeDatePattern(ShiJianChuo){-->
+<!--    var date = new Date(ShiJianChuo);  // 参数需要毫秒数，所以这里将秒数乘于 1000-->
+<!--    Y = date.getFullYear() + '-';-->
+<!--    M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';-->
+<!--    D = date.getDate() + ' ';-->
+<!--    h = date.getHours() + ':';-->
+<!--    m = date.getMinutes() + ':';-->
+<!--    s = date.getSeconds();-->
+<!--    return Y+M+D+h+m+s;-->
+<!--  }-->
+<!--</script>-->
+
+<!-- 引用 Live2D 核心组件 -->
+<script src='../Pio/static/l2d.js'></script>
+<!-- 引用看板娘交互组件 -->
+<script src='../Pio/static/pio.js'></script>
+<script>
+
+  var pio = new Paul_Pio({
+    "mode": "fixed",
+    "hidden": true,
+    "skin": ["想看看我的新服装吗？", "新衣服真漂亮~"],
+    "content": {
+      "welcome": ["欢迎来到健康管理系统！"],
+    },
+    "night": "single.night()",
+    "model": ["../Pio/models/pio/model.json"],
+  });
+</script>
+</body>
+</html>
+      

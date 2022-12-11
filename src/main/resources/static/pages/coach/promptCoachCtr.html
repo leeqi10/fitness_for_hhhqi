@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        
+  <meta charset="utf-8">
+    </head>
+    <style>
+        .layui-upload-img {
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+<body>
+
+<form class="layui-form layui-form-pane" id="coachPrompt_form" action="">
+
+    <input type="hidden" name="coachId" id="coach_id_prompt_input">
+    <div class="layui-form-item" pane>
+        <label class="layui-form-label">教练名称</label>
+        <div class="layui-input-block">
+        <input type="text" name="coachName" required lay-verify="required" autocomplete="off" class="layui-input" id="coach_name_prompt_input" value="name">
+        </div>
+    </div>
+    <div class="layui-form-item" pane>
+        <label class="layui-form-label">教练身高</label>
+        <div class="layui-input-block">
+        <input type="text" name="coachHeight" required lay-verify="required" autocomplete="off" class="layui-input" id="coach_height_prompt_input" value="password">
+        </div>
+    </div>
+    <!-- //radio类型不对  所以删了，下面select一样 格式是名字加_prompt_input  时间一样需要改格式 现在已经编辑好了  需要导入-->
+    <div class="layui-form-item" pane>
+        <label class="layui-form-label">教练体重</label>
+        <div class="layui-input-block">
+        <input type="text" name="coachWeight" autocomplete="off" class="layui-input" id="coach_weight_prompt_input">
+        </div>
+    </div>
+    <div class="layui-row">
+        <div class="layui-col-md4 layui-col-sm4">
+            <div class="layui-form-item" pane>
+                <label class="layui-form-label">教练头像</label>
+                <div class="layui-input-block">
+
+                    <div class="layui-upload" style="margin-left: 10px">
+                        <button type="button" class="layui-btn" id="loadImg">上传图片</button>
+                        <input type="hidden" id="coachHeader" name="coachHeader" value=""/>
+                        <div class="layui-upload-list">
+                            <img class="layui-upload-img" id="coach_header_img">
+                            <p id="errorText"></p>
+                        </div>
+                        <div style="width: 95px;">
+                            <div class="layui-progress layui-progress-big" lay-showpercent="yes" lay-filter="coach_header_img_filter">
+                                <div class="layui-progress-bar" lay-percent=""></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--                        <input type="text" name="coach_header" required lay-verify="required" placeholder="上传头像，暂时不弄" autocomplete="off" class="layui-input">-->
+                </div>
+            </div>
+        </div>
+    </div>
+    </form>
+<script>
+    layui.use(['upload', 'element', 'layer'], function(){
+        var $ = layui.jquery
+            ,upload = layui.upload
+            ,element = layui.element
+            ,layer = layui.layer;
+
+        //常规使用 - 普通图片上传
+        var uploadInst = upload.render({
+            elem: '#loadImg'
+            ,url: '/image/uploadPicture' //上传接口。
+            ,before: function(obj){
+                //预读本地文件示例，不支持ie8
+                obj.preview(function(index, file, result){
+                    $('#coach_header_img').attr('src', result); //图片链接（base64）
+                });
+
+                element.progress('coach_header_img_filter', '0%'); //进度条复位
+                layer.msg('上传中', {icon: 16, time: 0});
+            }
+            ,done: function(res){
+                //如果上传失败
+                if(res.code > 0){
+                    return layer.msg('上传失败');
+                }
+                //上传成功的一些操作
+                //……
+                $("#coachHeader").val(res.data); //设置上传成功的图片名字
+                $('#errorText').html(''); //置空上传失败的状态
+            }
+            ,error: function(){
+                //演示失败状态，并实现重传
+                var demoText = $('#errorText');
+                demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                demoText.find('.demo-reload').on('click', function(){
+                    uploadInst.upload();
+                });
+            }
+            //进度条
+            ,progress: function(n, elem, e){
+                element.progress('coach_header_img_filter', n + '%'); //可配合 layui 进度条元素使用
+                if(n == 100){
+                    layer.msg('上传完毕', {icon: 1});
+                }
+            }
+        });
+
+    });
+</script>
+</body>
+</html>

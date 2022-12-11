@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统账号管理</title>
+  <style>
+    .layui-layer-title{
+      background-color: #F6F6F6;
+    }
+    .layui-layer-content .layui-form-label{
+      background-color:#F6F6F6;
+    }
+  </style>
+</head>
+<body>
+    <div class="layui-fluid" style="vertical-align: middle;">
+        <div class="layui-row">
+            <div class="layui-col-md12 layui-col-sm12">
+                <span style="color: #c2c2c2;">首页&nbsp;/ </span>
+                <span style="color: rgb(121,121,121);">&nbsp;系统账号角色&nbsp;/
+                &nbsp;账号管理&nbsp;/</span>
+            </div>
+        </div>
+        <hr class="layui-border-blue">
+        <!-- 筛选条件 -->
+        <div class="layui-row" style="margin: 10px auto;">
+            <div class="layui-col-md12  layui-col-sm12">
+                <fieldset style="padding: 10px;margin: 10px;width: 97%;border: #e2e2e2 solid 1px;">
+                    <legend style="font-size: 20px;">&nbsp;筛选条件&nbsp;</legend>
+                    <form class="layui-form layui-form-pane" action="">
+                        <div class="layui-row layui-col-space20">
+                            <div class="layui-col-md4 layui-col-sm4">
+                                <div class="layui-form-item" pane >
+                                <label class="layui-form-label">登录起始时间</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="current_time" id="start_time_find" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+                                </div>
+                                </div>
+                            </div>
+                            <div class="layui-col-md4 layui-col-sm4">
+                                <div class="layui-form-item" pane>
+                                    <label class="layui-form-label">结束时间</label>
+                                    <div class="layui-input-block">
+                                    <input type="text" name="end_time" id="end_time_find" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-row layui-col-space10">
+                            <div class="layui-col-md4 layui-col-sm4">
+                                <div class="layui-form-item" pane>
+                                    <label class="layui-form-label">用户名称</label>
+                                    <div class="layui-input-block">
+                                    <input type="text" name="username_search" id="username_search_find" placeholder="模糊查询账号名称" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-col-md1 layui-col-sm1">
+                                <button type="reset" class="layui-btn layui-btn-radius layui-btn-warm" onclick="find_user_data()">重置</button>
+                            </div>
+                            <div class="layui-col-md1 layui-col-sm1">
+                                <button type="button" class="layui-btn layui-btn-radius layui-btn-normal" onclick="find_user_data()">搜索</button>
+                            </div>
+                        </div>
+                    </form>
+                </fieldset>
+            </div>
+        </div>
+        <!-- 数据表单 -->
+        <div class="layui-row" style="margin: 10px auto;">
+            <div class="layui-col-md12  layui-col-sm12">
+                <table class="layui-hide" id="userCtrTbl" lay-filter="userCtrTbl"></table>
+            </div>
+        </div>
+    </div>
+
+
+    
+    <script type="text/html" id="toolbarDemo">
+      <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="addUserEvent">新增账号</button>
+        <button class="layui-btn layui-btn-sm" lay-event="numDownloadElemEvent">批量下载</button>
+        <button class="layui-btn layui-btn-sm" lay-event="numDeleteElemEvent">批量删除</button>
+      </div>
+    </script>
+     
+    <script type="text/html" id="barDemo">
+      <a class="layui-btn layui-btn-xs" lay-event="edit">修改</a>
+      <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+                  
+              
+    <script>
+        function find_user_data(){
+            var stf_temp = dateStrChangeTimeTamp($("#start_time_find").val());
+            var etf_temp = dateStrChangeTimeTamp($("#end_time_find").val());
+            var usf_temp = $("#username_search_find").val();
+            var url_find_temp = "/user/chaXunFenYe?stime="+stf_temp+"&etime="+etf_temp+"&idUsername="+usf_temp;
+            layui.use('table', function() {
+                var table = layui.table;
+                table.reload('userCtrTbl', {
+                    url: url_find_temp
+                    , where: {} //设定异步数据接口的额外参数
+                    //,height: 300
+                    ,page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                });
+            });
+        }
+        layui.use('table', function(){
+          var table = layui.table;
+          
+          table.render({
+            elem: '#userCtrTbl'
+            ,url:"/user/chaXunFenYe?stime=&etime=&idUsername="/*tpa=https://www.layui.site/test/table/demo1.json*/
+            ,toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+            ,defaultToolbar: ['filter', 'exports', 'print', { //自定义头部工具栏右侧图标。如无需自定义，去除该参数即可
+              title: '提示'
+              ,layEvent: 'LAYTABLE_TIPS'
+              ,icon: 'layui-icon-tips'
+            }]
+            ,title: '用户数据表'
+              ,page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                  //layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+                  //,curr: 5 //设定初始在第 5 页
+                  groups: 6 //只显示 1 个连续页码
+                  // ,first: false //不显示首页
+                  // ,last: false //不显示尾页
+              }
+            ,cols: [[
+              {type: 'checkbox', fixed: 'left'}
+              ,{field:'id', title:'ID', width:80, fixed: 'left', unresize: true, sort: true}
+              ,{field:'username', title:'用户名称', width:120, sort: true}
+               ,{field:'password', title:'密码', width:120, }//传来处理过的数据
+               ,{field:'lastLoginTime', title:'最后登录时间',templet : "<div>{{layui.util.toDateString(d.lastLoginTime, 'yyyy-MM-dd HH:mm:ss')}}</div>", width:240, sort: true}
+               ,{field:'loginCount', title:'登录次数', width:120, sort: true}
+              ,{field:'phone', title:'联系方式', width:120}
+              ,{field:'age', title:'年龄', width:100, sort: true}
+              ,{field:'name', title:'姓名', width:100, sort: true}
+              ,{field:'role', title:'角色', width:100, sort: true}
+              ,{fixed:'right', title:'操作', toolbar: '#barDemo', width:150}
+            ]]
+          });
+          
+          //头工具栏事件
+          table.on('toolbar(userCtrTbl)', function(obj){
+            var checkStatus = table.checkStatus(obj.config.id);  //选中数据
+            switch(obj.event){
+              //自定义头工具栏右侧图标 - 提示
+              case 'addUserEvent':
+                // console.log($(this).attr("page"))
+                $("#content").load("user/addUser.html");
+                break;
+              case 'numDownloadElemEvent':
+                  var stf_temp = dateStrChangeTimeTamp($("#start_time_find").val());
+                  var etf_temp = dateStrChangeTimeTamp($("#end_time_find").val());
+                  var usf_temp = $("#username_search_find").val();
+                  var url_find_temp = "/user/chaXunFenYe?stime="+stf_temp+"&etime="+etf_temp+"&idUsername="+usf_temp+"&page=1&limit=1000000";
+                  $.ajax({
+                      url: url_find_temp,
+                      dataType: 'json',
+                      success: function(res) {
+                          // 假如返回的 res.data 是需要导出的列表数据
+                          //console.log(res);// [{name: 'wang', age: 18}, {name: 'layui', age: 3}]
+                          var data = res.data;// 后台的数据
+                          //data.push.apply(data, res.data);
+                          LAY_EXCEL.filterExportData(data, {
+                              name: 'username',
+                              age: 'age',
+                              lastLoginTime: function(value, line, data) {
+                                  var temp = LAY_EXCEL.dateCodeFormat(43737.54167824074, 'YYYY-MM-DD HH:ii:ss')
+                                  console.log(temp) // "2019-08-00 13:00:01"
+                                  return temp;
+                              },
+                              "电话": 'phone'
+                          });
+                          LAY_EXCEL.exportExcel(data, 'user数据.xlsx', 'xlsx');
+
+                      }
+                  });
+                  break;
+              case 'numDeleteElemEvent':
+                var data=checkStatus.data;
+                layer.alert(JSON.stringify(data));
+              break;
+            };
+          });
+          
+          //监听行工具事件
+          table.on('tool(userCtrTbl)', function(obj){
+            var data = obj.data;
+            //console.log(obj)
+            if(obj.event === 'del'){
+              layer.confirm('真的删除行么', function(index){
+                obj.del();
+                  $.ajax({
+                      type: "DELETE",
+                      url:"/user/shanChuById/"+data.id,
+                      async: false,
+                      error: function(request) {
+                          alert("Connection error");
+                      },
+                      success: function(data) {
+                          //接收后台返回的结果
+                      }
+                  });
+                layer.close(index);
+              });
+            } else if(obj.event === 'edit'){
+                var form = layui.form;
+                layer.prompt({
+                  title: ['更新用户', 'font-size:18px;']
+                  ,formType: 2
+                  ,maxHeight: 300
+                  ,area: ['500px', '600px']
+                  ,btn:['更新','取消']
+                  ,yes: function(index){
+                    //验证  目前有手机号与岁数验证
+                      if(!checPrompt()){
+                        return false;  
+                      }
+                        $.ajax({
+                            type: "PUT",
+                            url:"/user/gengXinById",
+                            data:$('#user_form_prompt').serialize(),
+                            async: false,
+                            error: function(request) {
+                                alert("Connection error");
+                            },
+                            success: function(data) {
+                                //接收后台返回的结果
+                                num = data;
+                            }
+                        });
+                      obj.update({
+                        username: $('#username_prompt_input').val()
+                        // ,password: $('#password_prompt_input').val()
+                        ,name: $('#name_prompt_input').val()
+                        ,phone: $('#phone_prompt_input').val()
+                        ,age: $('#age_prompt_input').val()
+                        ,role: $(".layui-form-select dl dd[class='layui-this']").attr("lay-value")
+                      });
+
+                      layer.close(index);
+                    }
+                }),
+              //alert(username_new);
+                $('.layui-layer-content').html('');
+                $('.layui-layer-content').load("user/promptUserCtr.html");
+                $.ajax({
+                    url : "user/promptUserCtr.html",
+                    type : "get",
+                    dataType : "html",
+                    success : function(result) {
+                        //result是可以获取b页面的数据和dom节点的
+                      layui.use('form', function () {
+                          var form = layui.form;
+                          $('#username_prompt_input').val(data.username);
+                          $('#name_prompt_input').val(data.name);
+                          $('#phone_prompt_input').val(data.phone);
+                          $('#age_prompt_input').val(data.age);
+                          $('#id_prompt_input').val(data.id);
+                          //更改选中值
+                          $("#role_select_prompt").val(data.role);
+                          //重新渲染下拉框
+                          form.render("select");
+                      })
+                      },
+                      error : function() {
+                        alert("error")
+                    }
+                });
+            }
+          });
+        });
+</script>    
+<!-- 时间 -->
+<script>
+layui.use('laydate', function(){
+  var laydate = layui.laydate;
+  
+  //执行一个laydate实例
+  laydate.render({
+    elem: '#start_time_find' //指定元素
+    ,type: "datetime"     //日期格式
+  });
+
+  laydate.render({
+    elem: '#end_time_find' //指定元素
+    ,type: "datetime"     //日期格式
+    //,value: '2020-08-18 8:00:00'
+  });
+});
+</script>
+
+<script>
+  
+	var reg_tel = /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/;    //11位手机号码正则
+  var reg_age = /^(?:[1-9][0-9]?|1[01][0-9]|120)$/;     //年龄的正则
+	function checPrompt() {
+	     if (!reg_tel.test($('#phone_prompt_input').val())) {
+            layer.msg('请正确填写您的手机号码！');
+			$('#phone_prompt_input').focus();
+			$('#phone_prompt_input').select();
+			return false;
+		}
+    if ($('#age_prompt_input').val() =="") { 
+      layer.msg("请填写您的年龄！")
+			$('#age_prompt_input').focus();
+			$('#age_prompt_input').select();
+			return false;
+		} else if (!reg_age.test($('#age_prompt_input').val())) { 
+      layer.msg('请正确填写您的年龄！');
+			$('#age_prompt_input').focus();
+			$('#age_prompt_input').select();
+			return false;
+		}
+    return true;
+	}
+</script>
+<script>
+    //日期字符串转成时间戳
+    //例如var date = '2015-03-05 17:59:00.0';
+    function dateStrChangeTimeTamp(dateStr){
+        dateStr = dateStr.substring(0,19);
+        dateStr = dateStr.replace(/-/g,'/');
+        var timeTamp = new Date(dateStr).getTime();
+        return timeTamp;
+    }
+    $.fn.serializeObject = function() {
+        var o = {};
+        var a = this.serializeArray();
+        $.each(a, function() {
+            if (o[this.name] !== undefined) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
+    };
+</script>
+
+</body>  
+</html>

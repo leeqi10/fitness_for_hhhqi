@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统账号管理</title>
+  <style>
+    .layui-layer-title{
+      background-color: #F6F6F6;
+    }
+    .layui-form-item .layui-form-label{
+      background-color:#f0f0f0;
+    }
+    .layui-upload-img {
+         width: 92px;
+         height: 92px;
+     }
+  </style>
+</head>
+<body>
+         
+<!-- 界面和修改界面差不多，也可以修改界面更改 -->
+<form class="layui-form layui-form-pane" ID="coachPrompt_form" action="">
+    <div class="layui-fluid" style="vertical-align: middle;">
+        <div class="layui-row">
+            <div class="layui-col-md12 layui-col-sm12">
+                <span style="color: #c2c2c2;">首页&nbsp;/ </span>
+                <span style="color: rgb(121,121,121);">&nbsp; 所有教练管理&nbsp;/
+                &nbsp;教练管理&nbsp;/</span>
+            </div>
+        </div>
+        <hr class="layui-border-blue">
+        <div class="layui-row">
+            <div class="layui-col-md4 layui-col-sm4">
+                <div class="layui-form-item" pane>
+                    <label class="layui-form-label">教练名称</label>
+                    <div class="layui-input-block">
+                    <input type="text" name="coachName" required lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-row">
+            <div class="layui-col-md4 layui-col-sm4">
+                <div class="layui-form-item" pane>
+                    <label class="layui-form-label">教练身高</label>
+                    <div class="layui-input-block">
+                    <input type="text" name="coachHeight" required lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- <div class="layui-row">
+            <div class="layui-col-md4 layui-col-sm4">
+                <div class="layui-form-item" pane>
+                    <label class="layui-form-label">添加时间  发现添加时间应该就是创建时间，不用设置</label>
+                    <div class="layui-input-block">
+                    <input type="text" name="title" required lay-verify="required" placeholder="" autocomplete="off" class="layui-input" id="add_payProject_time">
+                    </div>
+                </div>
+            </div>
+        </div> -->
+
+        <div class="layui-row">
+            <div class="layui-col-md4 layui-col-sm4">
+                <div class="layui-form-item" pane>
+                    <label class="layui-form-label">教练体重</label>
+                    <div class="layui-input-block">
+                    <input type="text" name="coachWeight" required lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-row">
+            <div class="layui-col-md4 layui-col-sm4">
+                <div class="layui-form-item" pane>
+                    <label class="layui-form-label">教练头像</label>
+                    <div class="layui-input-block">
+
+                        <div class="layui-upload" style="margin-left: 10px">
+                            <button type="button" class="layui-btn" id="loadImg">上传图片</button>
+                            <input type="hidden" id="coachHeader" name="coachHeader" value=""/>
+                            <div class="layui-upload-list">
+                                <img class="layui-upload-img" id="coach_header_img">
+                                <p id="errorText"></p>
+                            </div>
+                            <div style="width: 95px;">
+                                <div class="layui-progress layui-progress-big" lay-showpercent="yes" lay-filter="coach_header_img_filter">
+                                    <div class="layui-progress-bar" lay-percent=""></div>
+                                </div>
+                            </div>
+                        </div>
+<!--                        <input type="text" name="coach_header" required lay-verify="required" placeholder="上传头像，暂时不弄" autocomplete="off" class="layui-input">-->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-row">
+            <div class="layui-col-md4 layui-col-sm4">
+                <div class="layui-col-md2 layui-col-sm2">
+                    <button type="reset" class="layui-btn layui-btn-radius layui-btn-warm">重置</button>
+                </div>
+                <div class="layui-col-md2 layui-col-sm2">
+                    <button type="button" class="layui-btn layui-btn-radius layui-btn-normal" lay-submit lay-filter="formDemo" onclick="submit_adduser()">添加</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    layui.use(['upload', 'element', 'layer'], function(){
+        var $ = layui.jquery
+            ,upload = layui.upload
+            ,element = layui.element
+            ,layer = layui.layer;
+
+        //常规使用 - 普通图片上传
+        var uploadInst = upload.render({
+            elem: '#loadImg'
+            ,url: '/image/uploadPicture' //上传接口。
+            ,before: function(obj){
+                //预读本地文件示例，不支持ie8
+                obj.preview(function(index, file, result){
+                    $('#coach_header_img').attr('src', result); //图片链接（base64）
+                });
+
+                element.progress('coach_header_img_filter', '0%'); //进度条复位
+                layer.msg('上传中', {icon: 16, time: 0});
+            }
+            ,done: function(res){
+                //如果上传失败
+                if(res.code > 0){
+                    return layer.msg('上传失败');
+                }
+                //上传成功的一些操作
+                //……
+                $("#coachHeader").val(res.data); //设置上传成功的图片名字
+                $('#errorText').html(''); //置空上传失败的状态
+            }
+            ,error: function(){
+                //演示失败状态，并实现重传
+                var demoText = $('#errorText');
+                demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                demoText.find('.demo-reload').on('click', function(){
+                    uploadInst.upload();
+                });
+            }
+            //进度条
+            ,progress: function(n, elem, e){
+                element.progress('coach_header_img_filter', n + '%'); //可配合 layui 进度条元素使用
+                if(n == 100){
+                    layer.msg('上传完毕', {icon: 1});
+                }
+            }
+        });
+
+    });
+    function submit_adduser(){
+        $.ajax({
+            type: "POST",
+            url:"/coach/xinZeng",
+            data:$('#coachPrompt_form').serialize(),
+            async: false,
+            error: function(request) {
+                alert("Connection error");
+            },
+            success: function(data) {
+                //接收后台返回的结果
+                alert("添加成功");
+            }
+        });
+    }
+</script>
+</body>
+</html>

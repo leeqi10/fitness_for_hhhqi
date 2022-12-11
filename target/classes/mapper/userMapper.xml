@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="hhhqi.com.dao.UserDao">
+    <sql id="baseQuery">
+        select id,
+               username,
+               password,
+               last_login_time,
+               login_count,
+               phone,
+               age,
+               name,
+               role
+        from user
+    </sql>
+
+    <!--1. 模糊查询-->
+    <select id="selectLimitUser" resultType="hhhqi.com.entity.User" resultMap="UserEntity">
+        <include refid="baseQuery"/>
+        where 1=1
+        <if test='stime!=null and stime!=""'> and last_login_time&gt;#{stime} </if> -- &gt;是大于 下一个是小于
+        <if test='etime!=null and etime!=""'> and last_login_time&lt;#{etime} </if>
+        <if test='idUsername!=null and idUsername!=""'>
+            <bind name="idUsernameLike" value="'%' + idUsername + '%'" />
+            and (id like #{idUsernameLike}
+            or username like #{idUsernameLike})
+        </if>
+        order by id asc limit #{start},#{end}
+    </select>
+
+    <!--2. 查询所有用户-->
+    <select id="getAllUser" resultType="hhhqi.com.entity.User" resultMap="UserEntity">
+        <include refid="baseQuery"/>
+    </select>
+
+
+    <!--3. 更新信息-->
+    <update id="updateUserByID">
+        update user
+        <trim prefix='set ' suffixOverrides=','>
+            id = #{id},
+            <if test='username!=null and username!=""'> username=#{username},</if>
+            <if test='password!=null and password!=""'>password=#{password},</if>
+            <if test='time!=null and time!=""'>last_login_time=#{time},</if>
+            <if test='loginCount!=null and loginCount!=""'>login_count=#{loginCount},</if>
+            <if test='phone!=null and phone!=""'>phone=#{phone},</if>
+            <if test='age!=null and age!=""'>age=#{age},</if>
+            <if test='name!=null and name!=""'>name=#{name},</if>
+            <if test='role!=null and role!=""'>role=#{role}</if>
+        </trim> where id=#{id}
+    </update>
+
+    <!--4. 删除新息-->
+    <delete id="deleteUserByID">
+        delete from user where id=#{id}
+    </delete>
+
+    <!--5. 登录-->
+    <select id="selectUserByLogin" resultMap="UserEntity">
+        <include refid="baseQuery"/>
+        <where>
+            username = #{username}
+            and password = #{password}
+        </where>
+    </select>
+    <select id="selectAllUser" resultType="hhhqi.com.entity.User" resultMap="UserEntity">
+        <include refid="baseQuery"/>
+    </select>
+
+    <insert id="insertUser">
+        insert into user(username,password,last_login_time,login_count,phone,age,name,role) value
+        <trim prefix='(' suffixOverrides=','>
+        <if test='username!=null and username!=""'> #{username},</if>
+        <if test='password!=null and password!=""'>#{password},</if>
+        <if test='time!=null and time!=""'>#{time},</if>
+        0,
+        <if test='phone!=null and phone!=""'>#{phone},</if>
+        <if test='age!=null and age!=""'>#{age},</if>
+        <if test='name!=null and name!=""'>#{name},</if>
+        <if test='role!=null and role!=""'>#{role}</if>
+        </trim>  )
+    </insert>
+<!--    数据库每个值对应实体的值-->
+    <resultMap id="UserEntity" type="hhhqi.com.entity.User">
+        <id column="id" property="id"/>
+        <!-- property对应实体类的属性名称，column为数据库字段名 -->
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="last_login_time" property="lastLoginTime"/>
+        <result column="login_count" property="loginCount"/>
+        <result column="phone" property="phone"/>
+        <result column="age" property="age" />
+        <result column="name" property="name"/>
+        <result column="role" property="role"/>
+    </resultMap>
+
+</mapper>

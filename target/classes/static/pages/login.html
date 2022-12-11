@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel='shortcut icon' href='../img/logo.ico'>
+    <title>健身房会员信息管理系统</title>
+    
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <style>
+        *{
+            margin: 0; /* 需要清除body自带的外边距 */
+            padding: 0;
+        }
+        body,html{
+
+            height: 100%;
+
+            margin: 0; /* 需要清除body自带的外边距 */
+            background-color:rgb(228,231,236);
+        }
+        .pop{
+            position: absolute;
+            left: 50%;
+            top: 55%;
+            transform: translate(-50%, -50%);
+        }
+        .top{
+            position: absolute;
+            left: 50%;
+            top: 30%;
+            transform: translate(-50%, -50%);
+        }
+        /*.divclass{*/
+        /*    width: 25px;*/
+        /*    height: 25px;*/
+
+        /*    background-image: url("../img/登录-密码.svg");*/
+        /*    background-repeat: no-repeat;*/
+        /*    background-position: 0px;*/
+        /*}*/
+        /*.divclass2{*/
+        /*    width: 25px;*/
+        /*    height: 25px;*/
+
+        /*    background-image: url("../img/登录.svg");*/
+        /*    background-repeat: no-repeat;*/
+        /*    background-position: 0;*/
+        /*}*/
+        .centermd{
+            display: flex;
+            /*定义子级元素垂直居中*/
+            align-items: center;
+            /* 定义子级元素水平居中 */
+
+        }
+    </style>
+</head>
+<body>
+    <div class="lay-fluid" style="height: 100%;">
+        <div class="lay-row" style="height: 30%;">
+            <div class="layui-col-md12 layui-col-sm12 layui-col-xs12" style="background-image:url('../img/bg_login.jpg'); background-size: auto 100%; background-repeat: repeat-x; height:100%;width: 100%;" >
+                <div style="height: 100%;width: 100%;background-color: rgba(28, 131, 242, 0.9);">
+                        <p class="top" style="font-size:35px; background: fixed;color: aliceblue; min-width: 385px;">
+                            健身房会员信息管理系统
+                        </p>
+                        <p class="top" style="font-size: 14px;top:45%;background: fixed;color: aliceblue;min-width: 247px;align-content: center;">
+                            JIAN SHEN FANG HUI YUAN XI TONG
+                        </p>
+                    
+                    </div>  
+            </div>
+        </div>
+
+    </div>
+    <div class="pop" style="height: 70%; width: 70%;min-width: 900px;min-height: 400px;">
+        <div class="lay-fluid" style="height: 100%; width: 100%;">
+            <div class="layui-row centermd" style="background: none; background-color:rgb(255,255,255);min-width: 300px; height: 100%;border-radius: 20px;">
+                <!-- 表格中的列 -->
+                <div class="layui-col-md6 layui-col-sm5 layui-col-xs4" >
+                    <img src="../img/login_left.png" height="80%" width="80%">
+                </div>
+                <div class="layui-col-md6 layui-col-sm7 layui-col-xs8">
+                    <form class="layui-form" action="" id="user_form_login">
+                        <div class="layui-row  centermd">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label layui-col-md2 layui-col-sm2" style="padding: 0; max-height: 70px;font-size: 20px;"><img src="../img/登录.svg" height="90%" width="90%"></label>
+                                <div class="layui-input-inline layui-col-md10 layui-col-sm10 layui-col-xs12">
+                                    <input type="text" id="username_id" name="username" required  lay-verify="required" placeholder="请输入账号" autocomplete="off" class="layui-input" style="background-color: rgb(238,245,253);height: 72px;width: 360px;font-size: 20px;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-row  centermd">
+                            <div class="layui-form-item" style="max-height: 70px;">
+                                <label class="layui-form-label layui-col-md2 layui-col-sm2" style="padding: 0;font-size: 20px;"><img src="../img/登录-密码.svg" height="90%" width="90%"></label>
+                                <div class="layui-input-inline layui-col-md10 layui-col-sm10 layui-col-xs12">
+                                    <input type="password" id="password_id" name="password" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input" style="background-color: rgb(238,245,253);height: 72px;width: 360px;font-size: 20px;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item layui-row  centermd">
+                            <div class="layui-input-block">
+                                <button type="button" onclick="testForLogin()" class="layui-btn layui-btn-radius layui-btn-normal  layui-btn-lg " style="color:aliceblue;">登录</button>
+                                <button type="reset" class="layui-btn layui-btn-normal layui-btn-radius  layui-btn-lg " style="color:aliceblue;">重置</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script src="../layui/layui.js"></script>
+<script src="../js/jquery-3.6.0.js"></script>
+<script>
+    function testForLogin() {
+        var usern = $("#username_id").val().toString().trim();
+        var passw = $("#password_id").val().toString().trim();
+        if(usern.length > 0 && passw.length>0) {
+            var msgUser = NaN;
+            $.ajax({
+                type: "POST",
+                url: "/user/login",
+                data: $('#user_form_login').serialize(),
+                async: false,
+                error: function (request) {
+                    alert("访问出错" + request)
+                    msgUser = NaN
+                },
+                success: function (data) {
+                    //接收后台返回的结果
+                    if (data.count > 0.5) { //有信息，登录成功
+                        msgUser = data.data;
+                        sessionStorage.setItem("user", msgUser.toString())
+                        window.location.href = "/pages/menu.html"
+                    } else {
+                        alert("账号或者密码错误！"+usern+passw)
+                    }
+                }
+            })
+        }
+        else {
+            alert("账号或密码不能为空"+usern+passw)
+        }
+    }
+</script>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<form class="layui-form layui-form-pane" action="/user/gengXinById" name="user_form_prompt" id="user_form_prompt" method="POST" enctype="application/json">
+
+    <input type="hidden" name="_method" value="put"/>
+    <input type="hidden" name="id" id="id_prompt_input"/>
+    <div class="layui-form-item" pane>
+          <label class="layui-form-label">用户名称</label>
+          <div class="layui-input-block">
+          <input type="text" name="username" required lay-verify="required" autocomplete="off" class="layui-input" id="username_prompt_input" value="username">
+          </div>
+      </div>
+      <div class="layui-form-item" pane>
+          <label class="layui-form-label">密码</label>
+          <div class="layui-input-block">
+          <input type="password" name="password" placeholder="不填写则不更新" lay-verify="required" autocomplete="off" class="layui-input" id="password_prompt_input" value="">
+          </div>
+      </div>
+      <div class="layui-form-item" pane>
+          <label class="layui-form-label">姓名</label>
+          <div class="layui-input-block">
+          <input type="text" name="name" required lay-verify="required" autocomplete="off" class="layui-input" id="name_prompt_input" value="name">
+          </div>
+      </div>
+      <div class="layui-form-item" pane>
+          <label class="layui-form-label">联系方式</label>
+          <div class="layui-input-block">
+          <input type="text" name="phone" required lay-verify="required|phone" autocomplete="off" class="layui-input" id="phone_prompt_input" value="phone">
+          </div>
+      </div>
+      <div class="layui-form-item" pane>
+          <label class="layui-form-label">年龄</label>
+          <div class="layui-input-block">
+          <input type="text" name="age" required lay-verify="required" autocomplete="off" class="layui-input" id="age_prompt_input" value="age">
+          </div>
+      </div>
+      <div class="layui-form-item" pane>
+          <label class="layui-form-label">角色</label>
+          <div class="layui-input-block">
+              <select name="role" lay-verify="required" id="role_select_prompt" lay-filter="addRoleSel">
+                  <option value=""></option>
+              </select>
+          </div>
+      </div>
+</form>
+      <script>
+          layui.use(['form'], function(){
+              $ = layui.$,
+              form = layui.form;
+              $(function(){
+                  // console.log("xxx")
+                  //给role的下拉列表添加元素
+                  for(i of role){
+                      $("#role_select_prompt").append("<option value='"+i+"'>"+i+"</option>");
+                  }
+                  form.render();
+              });
+          })
+    </script>
+</body>
+</html>

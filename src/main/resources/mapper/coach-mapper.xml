@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="hhhqi.com.dao.CoachMapper">
+    <sql id="baseQuery">
+        select coach_id,
+               coach_name,
+               coach_height,
+               coach_weight,
+               coach_header
+        from coach
+    </sql>
+
+
+    <!--1. 模糊查询-->
+    <select id="selectLimitCoach" resultType="hhhqi.com.entity.Coach" resultMap="CoachEntity">
+        <include refid="baseQuery"/>
+        where 1=1
+        <if test='keyword!=null and keyword!=""'>
+            <bind name="keyword1" value="'%' + keyword + '%'" />
+            and (coach_id like #{keyword1}
+            or coach_name like #{keyword1})
+        </if>
+        order by coach_id asc limit #{start},#{end}
+    </select>
+
+    <!--2. 查询所有用户-->
+    <select id="getAllCoach" resultType="hhhqi.com.entity.Coach" resultMap="CoachEntity">
+        <include refid="baseQuery"/>
+    </select>
+
+
+    <!--3. 更新信息-->
+    <delete id="updateCoachByID">
+        update coach
+        <trim prefix='set ' suffixOverrides=','>
+            coach_id = #{coachId},
+            <if test='coachName!=null and coachName!=""'> coach_name=#{coachName},</if>
+            <if test='coachHeight!=null and coachHeight!=""'>coach_height=#{coachHeight},</if>
+            <if test='coachWeight!=null and coachWeight!=""'>coach_weight=#{coachWeight},</if>
+            <if test='coachHeader!=null and coachHeader!=""'>coach_header=#{coachHeader},</if>
+        </trim> where coach_id=#{coachId}
+    </delete>
+
+    <!--4. 删除新息-->
+    <update id="deleteCoachByID">
+        delete from coach where coach_id=#{coachId}
+    </update>
+
+    <!--4. 删除新息-->
+    <update id="deleteCourseByCoachId">
+        delete from course where course_coach in (select coach_name from coach where coach_id=#{coachId})
+    </update>
+
+    <insert id="insertCoach">
+        insert into coach(coach_name,coach_height,coach_weight,coach_header) value
+        <trim prefix='(' suffixOverrides=','>
+            <if test='coachName!=null and coachName!=""'>#{coachName},</if>
+            <if test='coachHeight!=null and coachHeight!=""'>#{coachHeight},</if>
+            <if test='coachWeight!=null and coachWeight!=""'>#{coachWeight},</if>
+            <if test='coachHeader!=null and coachHeader!=""'>#{coachHeader},</if>
+        </trim>  )
+    </insert>
+
+    <resultMap id="CoachEntity" type="hhhqi.com.entity.Coach">
+        <id column="coach_id" property="coachId" />
+        <!-- ，column为数据库字段名,,property对应实体类的属性名称 -->
+        <result column="coach_name" property="coachName"/>
+        <result column="coach_height" property="coachHeight"/>
+        <result column="coach_weight" property="coachWeight"/>
+        <result column="coach_header" property="coachHeader"/>
+    </resultMap>
+
+</mapper>

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统账号管理</title>
+  <style>
+    .layui-layer-title{
+      background-color: #F6F6F6;
+    }
+    .layui-layer-content .layui-form-label{
+      background-color:#F6F6F6;
+    }
+  </style>
+</head>
+<body>
+    <div class="layui-fluid" style="vertical-align: middle;">
+        <div class="layui-row">
+            <div class="layui-col-md12 layui-col-sm12">
+                <span style="color: #c2c2c2;">首页&nbsp;/ </span>
+                <span style="color: rgb(121,121,121);">&nbsp;健身教程管理&nbsp;/
+                &nbsp;新增教程&nbsp;/</span>
+            </div>
+        </div>
+        <hr class="layui-border-blue">
+        <!-- 筛选条件 -->
+        <div class="layui-row" style="margin: 10px auto;">
+            <div class="layui-col-md12  layui-col-sm12">
+                <fieldset style="padding: 10px;margin: 10px;width: 97%;border: #e2e2e2 solid 1px;">
+                    <legend style="font-size: 20px;">&nbsp;筛选条件&nbsp;</legend>
+                    <form class="layui-form layui-form-pane" action="">
+                        <div class="layui-row layui-col-space20">
+                            <div class="layui-col-md4 layui-col-sm4">
+                                <div class="layui-form-item" pane >
+                                <label class="layui-form-label">课程名称</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="course_name" id="course_name_find" placeholder="" autocomplete="off" class="layui-input">
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-row layui-col-space10">
+                            <div class="layui-col-md4 layui-col-sm4">
+                                <div class="layui-form-item" pane>
+                                    <label class="layui-form-label">教练姓名</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="course_coach" id="course_coach_find" placeholder="" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-col-md1 layui-col-sm1">
+                                <button type="reset" class="layui-btn layui-btn-radius layui-btn-warm">重置</button>
+                            </div>
+                            <div class="layui-col-md1 layui-col-sm1">
+                                <button type="button" class="layui-btn layui-btn-radius layui-btn-normal" onclick="find_course_data()">搜索</button>
+                            </div>
+                        </div>
+                    </form>                      
+                </fieldset>
+            </div>
+        </div>
+        <!-- 数据表单 -->
+        <div class="layui-row" style="margin: 10px auto;">
+            <div class="layui-col-md12  layui-col-sm12">
+                <table class="layui-hide" id="courseCtrTbl" lay-filter="courseCtrTbl"></table>
+            </div>
+        </div>
+    </div>
+
+
+    
+    <script type="text/html" id="toolbarDemo">
+      <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="addUserEvent">新增教程</button>
+        <button class="layui-btn layui-btn-sm" lay-event="downloadTemplateEvent">下载模板</button>
+        <button class="layui-btn layui-btn-sm" lay-event="numuploadElemEvent">批量上传</button>
+        <button class="layui-btn layui-btn-sm" lay-event="numDownloadElemEvent">批量下载</button>
+        <button class="layui-btn layui-btn-sm" lay-event="numDeleteElemEvent">批量删除</button>
+      </div>
+    </script>
+     
+    <script type="text/html" id="barDemo">
+      <a class="layui-btn layui-btn-xs" lay-event="edit">修改</a>
+      <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+                  
+              
+    <script>
+        layui.use('table', function(){
+          var table = layui.table;
+          
+          table.render({
+            elem: '#courseCtrTbl'
+            ,url:'/course/chaXunFenYe?courseName=&courseCoach='/*tpa=https://www.layui.site/test/table/demo1.json*/
+            ,toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+            ,defaultToolbar: ['filter', 'exports', 'print', { //自定义头部工具栏右侧图标。如无需自定义，去除该参数即可
+              title: '提示'
+              ,layEvent: 'LAYTABLE_TIPS'
+              ,icon: 'layui-icon-tips'
+            }]
+            ,title: '会员信息表'
+              ,page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                  //layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+                  //,curr: 5 //设定初始在第 5 页
+                  groups: 6 //只显示 1 个连续页码
+                  // ,first: false //不显示首页
+                  // ,last: false //不显示尾页
+              }
+            ,cols: [[
+              {type: 'checkbox', fixed: 'left'}
+              ,{field:'courseId', title:'ID', width:80, fixed: 'left', unresize: true, sort: true}
+              ,{field:'courseName', title:'课程名称', width:120, sort: true}
+              ,{field:'courseCoach', title:'教练姓名', width:120, }//传来处理过的数据
+              ,{field:'courseTime', title:'上课时间',templet : "<div>{{layui.util.toDateString(d.course_time, 'yyyy-MM-dd HH:mm:ss')}}</div>", width:180, sort: true}
+              ,{field:'courseCount', title:'班容量', width:100, sort: true}
+              ,{field:'courseAlready', title:'已报人数', width:100}
+              ,{field:'courseDate', title:'发布时间',templet : "<div>{{layui.util.toDateString(d.course_date, 'yyyy-MM-dd HH:mm:ss')}}</div>", width:180, sort: true}
+              ,{fixed:'right', title:'操作', toolbar: '#barDemo', width:150}        
+            ]]
+          });
+          
+          //头工具栏事件
+          table.on('toolbar(courseCtrTbl)', function(obj){
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch(obj.event){
+              //自定义头工具栏右侧图标 - 提示
+              case 'addUserEvent':
+                // console.log($(this).attr("page"))
+                $("#content").load("course/addCourse.html");
+              break;
+              case 'downloadTemplateEvent':
+                layer.prompt({
+                  formType: 2,
+                  title: '模板',
+                  area: ['400px', '500px'], //自定义文本域宽高
+                  btn:['确定','取消'],
+                  yes:function(index){
+                    layer.close(index);
+                  }
+                })
+                $('.layui-layer-content').html('');
+                $('.layui-layer-content').load("promptTemplateSet.html");
+              break;
+              case 'numuploadElemEvent':
+                getCheckData;
+              break;
+              case 'numDownloadElemEvent':
+                var data=checkStatus.data;
+                layer.alert(JSON.stringify(data));
+                  
+              break;
+              case 'numDeleteElemEvent':
+                var data=checkStatus.data;
+                layer.alert(JSON.stringify(data));
+              break;
+            };
+          });
+          
+          //监听行工具事件
+          table.on('tool(courseCtrTbl)', function(obj){
+            var data = obj.data;
+            //console.log(obj)
+            if(obj.event === 'del'){
+              layer.confirm('真的删除行么', function(index){
+                obj.del();
+                  $.ajax({
+                      type: "DELETE",
+                      url:"/course/delete?courseId="+data.courseId,
+                      async: false,
+                      error: function(request) {
+                          alert("Connection error");
+                      },
+                      success: function(data) {
+                          //接收后台返回的结果
+                      }
+                  });
+                layer.close(index);
+              });
+            } else if(obj.event === 'edit'){
+                layer.prompt({
+                  title: ['更新用户', 'font-size:18px;']
+                  ,formType: 2
+                  ,maxHeight: 300
+                  ,area: ['500px', '600px']
+                  ,btn:['更新','取消']
+                  ,yes: function(index){
+                    //验证  目前有手机号验证
+                      if(!checPrompt()){
+                        return false;  
+                      }
+                        $.ajax({
+                            type: "PUT",
+                            url:"/course/update",
+                            data:$('#coursePrompt_form').serialize(),
+                            async: false,
+                            error: function(request) {
+                                alert("Connection error");
+                            },
+                            success: function(data) {
+                                //接收后台返回的结果
+                                num = data;
+                            }
+                        });
+
+                      obj.update({
+                        courseName: $('#course_name_prompt_input').val()
+                        ,courseCoach: $('#course_coach_prompt_input').val()
+                        ,courseTime: $('#course_time_prompt_input').val()
+                        ,courseCount: $('#course_count_prompt_input').val()
+                        ,courseAlready: $('#course_already_prompt_input').val()
+                    });
+                      layer.close(index);
+                    }
+                }),
+                //alert(username_new);
+                $('.layui-layer-content').html('');
+                $('.layui-layer-content').load('course/promptCourseCtr.html');
+                $.ajax({
+                    url : "course/promptCourseCtr.html",
+                    type : "get",
+                    dataType : "html",
+                    success : function(result) {
+                        //result是可以获取b页面的数据和dom节点的
+                      layui.use('form', function () {
+                          var form = layui.form;
+                          $('#course_id_prompt_input').val(data.courseId);
+                          $('#course_name_prompt_input').val(data.courseName);
+                          $('#course_coach_prompt_input').val(data.courseCoach);
+                          $('#course_time_prompt_input').val(data.courseTime);
+                          $('#course_count_prompt_input').val(data.courseCount);
+                          $('#course_already_prompt_input').val(data.courseAlready);
+                      })
+                      },
+                      error : function() {
+                        alert("error")
+                    }
+                });
+              }
+          });
+        });
+</script>    
+<script>
+  
+	function checPrompt() { 
+		
+    return true;
+	}
+</script>
+<script>
+
+    function find_course_data(){
+        var stf_temp = $("#course_name_find").val();
+        var etf_temp = $("#course_coach_find").val();
+        var url_find_temp = "/course/chaXunFenYe?courseName="+stf_temp+"&courseCoach="+etf_temp;
+        layui.use('table', function() {
+            var table = layui.table;
+            table.reload('courseCtrTbl', {
+                url: url_find_temp
+                , where: {} //设定异步数据接口的额外参数
+                //,height: 300
+                ,page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+        });
+    }
+  layui.use('laydate', function(){
+     var laydate = layui.laydate;
+    //执行一个laydate实例
+    laydate.render({
+     elem: '#course_time_find' //指定元素
+     ,type: "datetime"     //日期格式
+     });
+  });
+</script>
+</body>  
+</html>

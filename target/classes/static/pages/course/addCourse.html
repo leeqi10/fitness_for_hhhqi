@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统账号管理</title>
+  <style>
+    .layui-layer-title{
+      background-color: #F6F6F6;
+    }
+    .layui-form-item .layui-form-label{
+      background-color:#f0f0f0;
+    }
+  </style>
+</head>
+<body>
+         
+
+<form class="layui-form layui-form-pane" id="coursePrompt_form" action="">
+    <div class="layui-fluid" style="vertical-align: middle;">
+        <div class="layui-row">
+            <div class="layui-col-md12 layui-col-sm12">
+                <span style="color: #c2c2c2;">首页&nbsp;/ </span>
+                <span style="color: rgb(121,121,121);">&nbsp;健身教程管理&nbsp;/
+                &nbsp;新增教程&nbsp;/</span>
+            </div>
+        </div>
+        <hr class="layui-border-blue">
+        <div class="layui-row">
+            <div class="layui-col-md4 layui-col-sm4">
+                <div class="layui-form-item" pane>
+                    <label class="layui-form-label">课程名称</label>
+                    <div class="layui-input-block">
+                    <input type="text" name="courseName" required lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-row">
+            <div class="layui-col-md4 layui-col-sm4">
+                <div class="layui-form-item" pane>
+                    <label class="layui-form-label">教练姓名</label>
+                    <div class="layui-input-block">
+                    <input type="password" name="courseCoach" required lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-row">
+            <div class="layui-col-md4 layui-col-sm4">
+                <div class="layui-form-item" pane>
+                    <label class="layui-form-label">上课时间</label>
+                    <div class="layui-input-block">
+                    <input type="text" name="courseTime" id="course_time_add" required lay-verify="required" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="layui-row">
+            <div class="layui-col-md4 layui-col-sm4">
+                <div class="layui-form-item" pane>
+                    <label class="layui-form-label">班容量</label>
+                    <div class="layui-input-block">
+                    <input type="text" name="courseCount" required lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-row">
+            <div class="layui-col-md4 layui-col-sm4">
+                <div class="layui-form-item" pane>
+                    <label class="layui-form-label">已报人数</label>
+                    <div class="layui-input-block">
+                    <input type="text" name="courseAlready" required lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+        </div>
+<!--        <div class="layui-row">-->
+<!--            <div class="layui-col-md4 layui-col-sm4">-->
+<!--                <div class="layui-form-item" pane>-->
+<!--                    <label class="layui-form-label">发布时间</label>-->
+<!--                    <div class="layui-input-block">-->
+<!--                    <input type="text" name="course_date" id="course_date_add" required lay-verify="required" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+        <div class="layui-row">
+            <div class="layui-col-md4 layui-col-sm4">
+                <div class="layui-col-md2 layui-col-sm2">
+                    <button type="reset" class="layui-btn layui-btn-radius layui-btn-warm">重置</button>
+                </div>
+                <div class="layui-col-md2 layui-col-sm2">
+                    <button type="button" class="layui-btn layui-btn-radius layui-btn-normal" lay-submit lay-filter="formDemo" onclick="submit_adduser()">添加</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+ <script>
+layui.use('laydate', function(){
+    var laydate = layui.laydate;
+   //执行一个laydate实例
+   laydate.render({
+    elem: '#course_time_add' //指定元素
+    ,type: "datetime"     //日期格式
+    });
+    laydate.render({
+    elem: '#course_date_add' //指定元素
+    ,type: "datetime"     //日期格式
+    });
+ });
+function submit_adduser(){
+    $.ajax({
+        type: "POST",
+        url:"/course/xingZeng",
+        data:$('#coursePrompt_form').serialize(),
+        async: false,
+        error: function(request) {
+            alert("Connection error");
+        },
+        success: function(data) {
+            //接收后台返回的结果
+            alert("添加成功");
+        }
+    });
+}
+ </script>
+</body>
+</html>

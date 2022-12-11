@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统账号管理</title>
+  <style>
+    .layui-layer-title{
+      background-color: #F6F6F6;
+    }
+    .layui-layer-content .layui-form-label{
+      background-color:#F6F6F6;
+    }
+  </style>
+</head>
+<body>
+    <div class="layui-fluid" style="vertical-align: middle;">
+        <div class="layui-row">
+            <div class="layui-col-md12 layui-col-sm12">
+                <span style="color: #c2c2c2;">首页&nbsp;/ </span>
+                <span style="color: rgb(121,121,121);">&nbsp;付费项目管理&nbsp;/
+                &nbsp;所有项目管理&nbsp;/</span>
+            </div>
+        </div>
+        <hr class="layui-border-blue">
+        <!-- 筛选条件 自己选择需要的条件，这个可以是名字和价格-->
+        <div class="layui-row" style="margin: 10px auto;">
+            <div class="layui-col-md12  layui-col-sm12">
+                <fieldset style="padding: 10px;margin: 10px;width: 97%;border: #e2e2e2 solid 1px;">
+                    <legend style="font-size: 20px;">&nbsp;筛选条件&nbsp;</legend>
+                    <form class="layui-form layui-form-pane" action="">
+                        <div class="layui-row layui-col-space20">
+                            <div class="layui-col-md4 layui-col-sm4">
+                                <div class="layui-form-item" pane >
+                                <label class="layui-form-label">项目名称</label>
+                                <div class="layui-input-block"> <!--    find是后缀 -->
+                                    <input type="text" name="project_name" placeholder="" id="project_name_find" autocomplete="off" class="layui-input">
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 时间需要格式  所以需要id -->
+                        <div class="layui-row layui-col-space10">
+                            <div class="layui-col-md4 layui-col-sm4">
+                                <div class="layui-form-item" pane>
+                                    <label class="layui-form-label">项目价格</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="project_price" id="project_price_find" placeholder="xx.xx" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-col-md1 layui-col-sm1">
+                                <button type="reset" class="layui-btn layui-btn-radius layui-btn-warm">重置</button>
+                            </div>
+                            <div class="layui-col-md1 layui-col-sm1">
+                                <button type="button" class="layui-btn layui-btn-radius layui-btn-normal" onclick="find_payProject_data()">搜索</button>
+                            </div>
+                        </div>
+                    </form>                      
+                </fieldset>
+            </div>
+        </div>
+        <!-- 数据表单 是后面script设置的  在里面改 刚才忘记改监听事件的了 全部替换为对应的id  表名CtrTbl-->
+        <div class="layui-row" style="margin: 10px auto;">
+            <div class="layui-col-md12  layui-col-sm12">
+                <table class="layui-hide" id="pay_projectCtrTbl" lay-filter="pay_projectCtrTbl"></table>
+            </div>
+        </div>
+    </div>
+
+
+    
+    <script type="text/html" id="toolbarDemo">
+        <!-- 全部结束，至此 -->
+      <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="addUserEvent">新增项目</button>
+        <button class="layui-btn layui-btn-sm" lay-event="downloadTemplateEvent">下载模板</button>
+        <button class="layui-btn layui-btn-sm" lay-event="numuploadElemEvent">批量上传</button>
+        <button class="layui-btn layui-btn-sm" lay-event="numDownloadElemEvent">批量下载</button>
+        <button class="layui-btn layui-btn-sm" lay-event="numDeleteElemEvent">批量删除</button>
+      </div>
+    </script>
+     
+    <script type="text/html" id="barDemo">
+      <a class="layui-btn layui-btn-xs" lay-event="edit">修改</a>
+      <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+                  
+              
+    <script>
+        layui.use('table', function(){
+          var table = layui.table;
+          //设置表格式样
+          //url是数据来源
+          table.render({
+            elem: '#pay_projectCtrTbl'
+            ,url:'/payProject/select?projectPrice=&projectName='/*tpa=https://www.layui.site/test/table/demo1.json*/
+            ,toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+            ,defaultToolbar: ['filter', 'exports', 'print', { //自定义头部工具栏右侧图标。如无需自定义，去除该参数即可
+              title: '提示'
+              ,layEvent: 'LAYTABLE_TIPS'
+              ,icon: 'layui-icon-tips'
+            }]
+            ,title: '会员信息表'
+              ,page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                  //layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+                  //,curr: 5 //设定初始在第 5 页
+                  groups: 6 //只显示 1 个连续页码
+                  // ,first: false //不显示首页
+                  // ,last: false //不显示尾页
+              }
+            ,cols: [[
+              {type: 'checkbox', fixed: 'left'}
+              ,{field:'projectId', title:'ID', width:80, fixed: 'left', unresize: true, sort: true}
+              ,{field:'projectName', title:'项目名称', width:120, sort: true}
+              ,{field:'projectPrice', title:'项目价格/￥', width:120, function (data) {
+                          var price = parseFloat(data.projectPrice).toFixed(2); //设置小数点后个数
+                          return price;
+                      }}//传来处理过的数据
+              ,{field:'projectDate', title:'添加时间',templet : "<div>{{layui.util.toDateString(d.projectDate, 'yyyy-MM-dd HH:mm:ss')}}</div>", width:180, sort: true}
+              ,{field:'projectContent', title:'项目简述', width:120, sort: true}
+              ,{fixed:'right', title:'操作', toolbar: '#barDemo', width:150}
+            ]]
+          });
+          
+          //头工具栏事件
+          table.on('toolbar(pay_projectCtrTbl)', function(obj){
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch(obj.event){
+              //自定义头工具栏右侧图标 - 提示
+              case 'addUserEvent':
+                // console.log($(this).attr("page"))
+                $("#content").load("payProject/addPay_project.html");
+              break;
+              case 'downloadTemplateEvent':
+                layer.prompt({
+                  formType: 2,
+                  title: '模板',
+                  area: ['400px', '500px'], //自定义文本域宽高
+                  btn:['确定','取消'],
+                  yes:function(index){
+                    layer.close(index);
+                  }
+                })
+                $('.layui-layer-content').html('');
+                $('.layui-layer-content').load("promptTemplateSet.html");
+              break;
+              case 'numuploadElemEvent':
+                getCheckData;
+              break;
+              case 'numDownloadElemEvent':
+                var data=checkStatus.data;
+                layer.alert(JSON.stringify(data));
+                  
+              break;
+              case 'numDeleteElemEvent':
+                var data=checkStatus.data;
+                layer.alert(JSON.stringify(data));
+              break;
+            };
+          });
+          
+          //监听行工具事件
+          //然后是编辑界面，也就是点击修改 然后的弹窗
+          //tool里面是监听的表id
+          table.on('tool(pay_projectCtrTbl)', function(obj){
+            var data = obj.data;//表单的数据
+            //console.log(obj)
+            if(obj.event === 'del'){
+              layer.confirm('真的删除行么', function(index){
+                obj.del();
+                  $.ajax({
+                      type: "DELETE",
+                      url:"/payProject?&projectId="+data.projectId,
+                      async: false,
+                      error: function(request) {
+                          alert("Connection error");
+                      },
+                      success: function(data) {
+                          //接收后台返回的结果
+                      }
+                  });
+                layer.close(index);
+              });
+            } else if(obj.event === 'edit'){
+                layer.prompt({
+                  title: ['更新项目', 'font-size:18px;']
+                  ,formType: 2
+                  ,maxHeight: 300
+                  ,area: ['500px', '600px']
+                  ,btn:['更新','取消']
+                  ,yes: function(index){
+                    //验证  目前有手机号验证
+                      if(!checPrompt()){
+                        return false;  
+                      }
+                      $.ajax({
+                            type: "PUT",
+                            url:"/payProject/update",
+                            data:$('#payProtect_form_prompt').serialize(),
+                            async: false,
+                            error: function(request) {
+                                alert("Connection error");
+                            },
+                            success: function(data) {
+                                //接收后台返回的结果
+                                num = data;
+                            }
+                        });
+                      //数据更新，改成对应的值，之前需要设计弹窗界面
+                       // 更新表单数据的field: 改到对应的值
+                       //$('#member_name_prompt_input').val()得到这个id的值
+                      obj.update({
+                        projectName: $('#project_name_prompt_input').val()
+                        ,projectPrice: $('#project_price_prompt_input').val()
+                        ,projectDate: $('#project_date_prompt_input').val()
+                        ,projectContent: $('#project_content_prompt_input').val()
+                      });
+                      layer.close(index);
+                    }
+                }),
+                //alert(username_new); load里加载弹窗html
+                $('.layui-layer-content').html('');
+                $('.layui-layer-content').load('payProject/promptPay_projectCtr.html');
+                //数据初始化 初始化的界面是什么
+                $.ajax({
+                    url : "payProject/promptPay_projectCtr.html",
+                    type : "get",
+                    dataType : "html",
+                    success : function(result) {
+                        //result是可以获取b页面的数据和dom节点的  需要初始弹窗界面的数据
+                      layui.use('form', function () {
+                          var form = layui.form;
+                          //现在去同步数据
+                          //$('#弹出框需要同步数据的地方id').val(给出的数据);
+                          //$('#member_name_prompt_input').val(data.member_number);
+                          $('#project_name_prompt_input').val(data.projectName);
+                          $('#project_price_prompt_input').val(data.projectPrice);
+                          //$('#phone_prompt_input').val(data.member_sex);
+                          //$('#age_prompt_input').val(data.member_type);
+                          $('#project_date_prompt_input').val(data.projectDate);
+                          $('#project_content_prompt_input').val(data.projectContent);
+                          $('#id_prompt_input').val(data.projectId);
+
+                      })
+                      },
+                      error : function() {
+                        alert("ajax promptPay_projectCtr error")
+                    }
+                });
+              }
+          });
+        });
+</script>    
+<script>
+  //正则，暂时不需要
+	//var reg_tel = /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/;    //11位手机号码正则
+	function checPrompt() { 
+	// 	if ($('#member_phone_prompt_input').val() =="") { 
+    //   layer.msg("请填写您的手机号码！")
+	// 		$('#member_phone_prompt_input').focus();
+	// 		$('#member_phone_prompt_input').select();
+	// 		return false;
+	// 	} else if (!reg_tel.test($('#member_phone_prompt_input').val())) { 
+    //   layer.msg('请正确填写您的手机号码！');
+	// 		$('#member_phone_prompt_input').focus();
+	// 		$('#member_phone_prompt_input').select();
+	// 		return false;
+	// 	}
+        return true;
+	}
+</script>
+<script>
+
+    function find_payProject_data(){
+        var stf_temp = $("#project_price_find").val();
+        var etf_temp = $("#project_name_find").val();
+        var url_find_temp = "/payProject/select?projectPrice="+stf_temp+"&projectName="+etf_temp;
+        layui.use('table', function() {
+            var table = layui.table;
+            table.reload('pay_projectCtrTbl', {
+                url: url_find_temp
+                , where: {} //设定异步数据接口的额外参数
+                //,height: 300
+                ,page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+        });
+    }
+  layui.use('laydate', function(){
+     var laydate = layui.laydate;
+    //执行一个laydate实例
+    laydate.render({
+     elem: '#project_date_find' //指定元素
+     ,type: "datetime"     //日期格式
+     });
+  });
+</script>
+</body>  
+</html>

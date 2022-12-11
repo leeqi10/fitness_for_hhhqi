@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统账号管理</title>
+  <style>
+    .layui-layer-title{
+      background-color: #F6F6F6;
+    }
+    .layui-form-item .layui-form-label{
+      background-color:#f0f0f0;
+    }
+  </style>
+</head>
+<body>
+         
+
+<form class="layui-form layui-form-pane" action="/user/xinZeng" method="post" id="addUser_form">
+    <div class="layui-fluid" style="vertical-align: middle;">
+        <div class="layui-row">
+            <div class="layui-col-md12 layui-col-sm12">
+                <span style="color: #c2c2c2;">首页&nbsp;/ </span>
+                <span style="color: rgb(121,121,121);">&nbsp;系统账号角色&nbsp;/
+                &nbsp;新增账号&nbsp;/</span>
+            </div>
+        </div>
+        <hr class="layui-border-blue">
+        <div class="layui-row">
+            <div class="layui-col-md4 layui-col-sm4">
+                <div class="layui-form-item" pane>
+                    <label class="layui-form-label">用户名称</label>
+                    <div class="layui-input-block">
+                    <input type="text" name="username" required lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-row">
+            <div class="layui-col-md4 layui-col-sm4">
+                <div class="layui-form-item" pane>
+                    <label class="layui-form-label">用户密码</label>
+                    <div class="layui-input-block">
+                    <input type="password" name="password" required lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-row">
+            <div class="layui-col-md4 layui-col-sm4">
+                <div class="layui-form-item" pane>
+                    <label class="layui-form-label">姓名</label>
+                    <div class="layui-input-block">
+                    <input type="text" name="name" required lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-row">
+            <div class="layui-col-md4 layui-col-sm4">
+                <div class="layui-form-item" pane>
+                    <label class="layui-form-label">角色</label>
+                    <div class="layui-input-block">
+                        <select name="role" lay-verify="required" id="role_select" lay-filter="addRoleSel">
+                            <option value=""></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-row">
+            <div class="layui-col-md4 layui-col-sm4">
+                <div class="layui-form-item" pane>
+                    <label class="layui-form-label">联系方式</label>
+                    <div class="layui-input-block">
+                    <input type="text" name="phone" required lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-row">
+            <div class="layui-col-md4 layui-col-sm4">
+                <div class="layui-form-item" pane>
+                    <label class="layui-form-label">年龄</label>
+                    <div class="layui-input-block">
+                    <input type="text" name="age" required lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-row">
+            <div class="layui-col-md4 layui-col-sm4">
+                <div class="layui-col-md2 layui-col-sm2">
+                    <button type="reset" class="layui-btn layui-btn-radius layui-btn-warm">重置</button>
+                </div>
+                <div class="layui-col-md2 layui-col-sm2">
+                    <button type="button" class="layui-btn layui-btn-radius layui-btn-normal" onclick="submit_adduser()">添加</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    //role选中的值  $(".layui-form-select dl dd[class='layui-this']").attr("lay-value")
+    layui.use(['form'], function(){
+        $ = layui.$,
+        form = layui.form;
+        $(function(){
+            // console.log("xxx")
+            //给role的下拉列表添加元素
+            for(i of role){
+                $("#role_select").append("<option value='"+i+"'>"+i+"</option>");
+            }
+            form.render();
+        });
+    })
+    function submit_adduser(){
+        $.ajax({
+            type: "POST",
+            url:"/user/xinZeng",
+            data:$('#addUser_form').serialize(),
+            async: false,
+            error: function(request) {
+                alert("Connection error");
+            },
+            success: function(data) {
+                //接收后台返回的结果
+                alert("添加成功");
+            }
+        });
+    }
+    
+</script>
+</body>
+</html>

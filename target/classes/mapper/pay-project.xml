@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="hhhqi.com.dao.PayProjectMapper">
+    <sql id="selectFields">
+        select project_id ,project_name
+        ,project_price,project_date,project_content
+        from pay_project
+    </sql>
+
+
+    <select id="selectPayProjectByPage" resultType="hhhqi.com.entity.PayProject" resultMap="projectEntity">
+        <include refid="selectFields"/>
+        <bind name="projectNameLike" value="'%' + projectName + '%'"/>
+        where 1=1
+        <if test='projectName!=null and projectName!=""'>
+            and project_name like #{projectNameLike}
+        </if>
+        <if test='projectPrice!=null and projectPrice!=""'> and (project_price&gt;CONVERT(#{projectPrice},DECIMAL)-100
+         and project_price &lt; CONVERT(#{projectPrice},DECIMAL)+100 )</if>
+        order by project_id asc limit #{start},#{end}
+    </select>
+
+    <select id="selectAllPayProject" resultType="hhhqi.com.entity.PayProject" resultMap="projectEntity">
+        <include refid="selectFields"/>
+    </select>
+
+    <insert id="insertPayProject" parameterType="hhhqi.com.entity.PayProject">
+        insert into pay_project (project_name, project_price, project_date, project_content)
+        values (#{projectName}, #{projectPrice}, now(),#{projectContent})
+    </insert>
+
+    <delete id="deletePayProject">
+        delete
+        from pay_project
+        where project_id = #{projectId}
+    </delete>
+
+    <update id="updatePayProject" parameterType="hhhqi.com.entity.PayProject">
+        update pay_project
+        <trim prefix='set ' suffixOverrides=','>
+            project_id = #{projectId},
+            <if test='projectName!=null and projectName!=""'> project_name=#{projectName},</if>
+            <if test='projectPrice!=null and projectPrice!=""'>project_price=#{projectPrice},</if>
+            <if test='projectDate.toString()!=null and projectDate.toString()!=""'>project_date=#{projectDate},</if>
+            <if test='projectContent!=null and projectContent!=""'>project_content=#{projectContent},</if>
+        </trim> where project_id=#{projectId}
+    </update>
+
+    <resultMap id="projectEntity" type="hhhqi.com.entity.PayProject">
+        <id column="project_id" property="projectId" />
+        <!-- ，column为数据库字段名,,property对应实体类的属性名称 -->
+        <result column="project_name" property="projectName"/>
+        <result column="project_price" property="projectPrice"/>
+        <result column="project_date" property="projectDate"/>
+        <result column="project_content" property="projectContent"/>
+    </resultMap>
+</mapper>

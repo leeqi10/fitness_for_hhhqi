@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        
+  <meta charset="utf-8">
+    </head>
+<body>
+    
+<form class="layui-form layui-form-pane" id="memberPrompt_form" action="">
+    <input type="hidden" name="memberId" id="member_id_prompt_input">
+    <div class="layui-form-item" pane>
+        <label class="layui-form-label">会员姓名</label>
+        <div class="layui-input-block">
+        <input type="text" name="memberName" required lay-verify="required" autocomplete="off" class="layui-input" id="member_name_prompt_input" value="name">
+        </div>
+    </div>
+    <div class="layui-form-item" pane>
+        <label class="layui-form-label">会员密码</label>
+        <div class="layui-input-block">
+        <input type="password" name="memberPassword" required lay-verify="required" autocomplete="off" class="layui-input" id="member_password_prompt_input" value="password">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">性别</label>
+        <div class="layui-input-block">
+          <input type="radio" lay-filter="radio_sex" name="memberSex" value="男" title="男">
+          <input type="radio" lay-filter="radio_sex" name="memberSex" value="女" title="女" checked>
+        </div>
+    </div>
+    <div class="layui-form-item" pane>
+        <label class="layui-form-label">会员类型</label>
+        <div class="layui-input-block">
+            <select name="memberType" required lay-verify="required" id="member_type_select" lay-filter="addMemberSel">
+                <option value=""></option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item" pane>
+        <label class="layui-form-label">出生日期</label>
+        <div class="layui-input-block">
+        <input type="text" name="memberBirth" autocomplete="off" class="layui-input" id="member_birth_prompt_input">
+        </div>
+    </div>
+    <div class="layui-form-item" pane>
+        <label class="layui-form-label">联系电话</label>
+        <div class="layui-input-block">
+        <input type="text" name="memberPhone" autocomplete="off" class="layui-input" id="member_phone_prompt_input">
+        </div>
+    </div>
+    <div class="layui-form-item" pane>
+        <label class="layui-form-label">住址</label>
+        <div class="layui-input-block">
+        <input type="text" name="memberAddress" autocomplete="off" class="layui-input" id="member_address_prompt_input">
+        </div>
+    </div>
+    <div class="layui-form-item" pane>
+        <label class="layui-form-label">到期时间</label>
+        <div class="layui-input-block">
+        <input type="text" name="memberEndTime" required lay-verify="required" autocomplete="off" class="layui-input" id="member_end_time_prompt_input">
+        </div>
+    </div>
+    </form>
+    <script>
+        layui.use('laydate', function(){
+            var laydate = layui.laydate;
+            
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#member_birth_prompt_input' //指定元素
+                ,type: "datetime"     //日期格式
+            });
+
+            laydate.render({
+                elem: '#member_end_time_prompt_input' //指定元素
+                ,type: "datetime"     //日期格式
+                //,value: '2020-08-18 8:00:00'
+            });
+        });
+    </script>
+    <script src="../../json/member_type.js"></script>
+    <script>
+    layui.use(['form'], function(){
+            $ = layui.$,
+            form = layui.form;
+            $(function(){
+                // console.log("xxx")
+                //给role的下拉列表添加元素
+                for(i of member_type){
+                    $("#member_type_select").append("<option value='"+i+"'>"+i+"</option>");
+                }
+                form.render();
+            });
+        })
+      
+    </script>
+</body>
+</html>
